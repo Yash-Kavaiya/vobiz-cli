@@ -1,0 +1,22 @@
+# Binaries
+/vobiz
+/vobiz.exe
+/dist/
+
+# Go test artifacts
+*.test
+*.out
+coverage.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local config / secrets
+.env
+.env.local
