@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	"github.com/spf13/cobra"
 
@@ -41,15 +42,26 @@ func runLogout(path, profile string, out io.Writer) error {
 	delete(f.Profiles, name)
 
 	if f.ActiveProfile == name {
-		f.ActiveProfile = ""
-		for k := range f.Profiles {
-			f.ActiveProfile = k
-			break
-		}
+		f.ActiveProfile = rotateActive(f.Profiles)
 	}
 	if err := config.Save(path, f); err != nil {
 		return err
 	}
 	fmt.Fprintf(out, "Removed profile %q.\n", name)
 	return nil
+}
+
+// rotateActive picks a deterministic survivor (lexicographically first key)
+// from the remaining profiles, or returns "" if none remain. Deterministic so
+// that repeated logouts on the same config produce the same active profile.
+func rotateActive(profiles map[string]config.Profile) string {
+	if len(profiles) == 0 {
+		return ""
+	}
+	names := make([]string, 0, len(profiles))
+	for k := range profiles {
+		names = append(names, k)
+	}
+	sort.Strings(names)
+	return names[0]
 }

@@ -2,8 +2,6 @@
 package account
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/yash-kavaiya/vobiz-cli/cmd/runtime"
@@ -20,14 +18,6 @@ var AccountFactory = func() (client.AccountAPI, error) {
 		return nil, err
 	}
 	return c.Account, nil
-}
-
-func mustAccount() client.AccountAPI {
-	a, err := AccountFactory()
-	if err != nil {
-		panic(fmt.Sprintf("account factory: %v", err))
-	}
-	return a
 }
 
 // Register adds `account` and its children to the parent command.

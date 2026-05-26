@@ -95,7 +95,7 @@ func runProfileRm(path, name string) error {
 	}
 	delete(f.Profiles, name)
 	if f.ActiveProfile == name {
-		f.ActiveProfile = ""
+		f.ActiveProfile = rotateActive(f.Profiles)
 	}
 	return config.Save(path, f)
 }

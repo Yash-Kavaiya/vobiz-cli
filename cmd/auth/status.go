@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	cliAuth "github.com/yash-kavaiya/vobiz-cli/internal/auth"
 	"github.com/yash-kavaiya/vobiz-cli/internal/config"
 )
 
@@ -34,7 +35,7 @@ func runStatus(path string, out io.Writer) error {
 	}
 	p := f.Profiles[f.ActiveProfile]
 	fmt.Fprintf(out, "Active profile: %s\nAuth ID:        %s\nBase URL:       %s\nConfig file:    %s\n",
-		f.ActiveProfile, p.AuthID, fallback(p.BaseURL, "https://api.vobiz.ai/api/v1"), path)
+		f.ActiveProfile, p.AuthID, fallback(p.BaseURL, cliAuth.DefaultBaseURL), path)
 	return nil
 }
 
