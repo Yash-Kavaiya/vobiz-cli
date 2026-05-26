@@ -2,8 +2,8 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-func registerVersion(_ *cobra.Command)    {}
-func registerCompletion(_ *cobra.Command) {}
-func registerAuth(_ *cobra.Command)       {}
-func registerAccount(_ *cobra.Command)    {}
-func registerDocs(_ *cobra.Command)       {}
+func registerVersion(root *cobra.Command)    { root.AddCommand(newVersionCmd()) }
+func registerCompletion(root *cobra.Command) { root.AddCommand(newCompletionCmd(root)) }
+func registerAuth(_ *cobra.Command)          {}
+func registerAccount(_ *cobra.Command)       {}
+func registerDocs(_ *cobra.Command)          {}
