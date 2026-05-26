@@ -5,6 +5,7 @@ go 1.22.5
 require gopkg.in/yaml.v3 v3.0.1
 
 require (
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jedib0t/go-pretty/v6 v6.7.10 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
