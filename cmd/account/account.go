@@ -6,26 +6,20 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cliAuth "github.com/yash-kavaiya/vobiz-cli/internal/auth"
+	"github.com/yash-kavaiya/vobiz-cli/cmd/runtime"
 	"github.com/yash-kavaiya/vobiz-cli/internal/client"
-	"github.com/yash-kavaiya/vobiz-cli/internal/config"
 )
 
-// AccountFactory is replaced in tests; in production it builds a real client.
+// Overrides is populated by Register's PersistentPreRunE so that AccountFactory
+// can see the global flag values at the time a subcommand runs.
+var Overrides runtime.Overrides
+
 var AccountFactory = func() (client.AccountAPI, error) {
-	path, err := config.DefaultPath()
+	c, err := runtime.NewClient(Overrides)
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := config.Load(path)
-	if err != nil {
-		return nil, err
-	}
-	creds, err := cliAuth.Resolve(cliAuth.Inputs{Config: cfg})
-	if err != nil {
-		return nil, err
-	}
-	return client.New(creds).Account, nil
+	return c.Account, nil
 }
 
 func mustAccount() client.AccountAPI {
@@ -36,11 +30,17 @@ func mustAccount() client.AccountAPI {
 	return a
 }
 
-// Register adds the `account` subtree.
-func Register(parent *cobra.Command, format func() string) {
+// Register adds `account` and its children to the parent command.
+// `format` returns the current value of the global -o flag; `ov` returns
+// the current values of the global credential flags.
+func Register(parent *cobra.Command, format func() string, ov func() runtime.Overrides) {
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Manage your Vobiz account",
+	}
+	cmd.PersistentPreRunE = func(*cobra.Command, []string) error {
+		Overrides = ov()
+		return nil
 	}
 	cmd.AddCommand(newGetCmd(format))
 	cmd.AddCommand(newBalanceCmd())
