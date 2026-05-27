@@ -5,6 +5,7 @@ import (
 
 	"github.com/yash-kavaiya/vobiz-cli/cmd/account"
 	"github.com/yash-kavaiya/vobiz-cli/cmd/auth"
+	"github.com/yash-kavaiya/vobiz-cli/cmd/calls"
 	"github.com/yash-kavaiya/vobiz-cli/cmd/docs"
 	"github.com/yash-kavaiya/vobiz-cli/cmd/numbers"
 	"github.com/yash-kavaiya/vobiz-cli/cmd/runtime"
@@ -18,6 +19,9 @@ func registerAccount(root *cobra.Command) {
 }
 func registerNumbers(root *cobra.Command) {
 	numbers.Register(root, func() string { return globalOutput }, ovFn)
+}
+func registerCalls(root *cobra.Command) {
+	calls.Register(root, func() string { return globalOutput }, ovFn)
 }
 func registerDocs(root *cobra.Command) { docs.Register(root) }
 
