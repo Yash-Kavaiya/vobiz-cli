@@ -11,6 +11,7 @@ type Client struct {
 	HTTP    *httpx.Client
 	Account AccountAPI
 	Numbers NumbersAPI
+	Calls   CallsAPI
 }
 
 func New(creds auth.Credentials) *Client {
@@ -24,5 +25,6 @@ func New(creds auth.Credentials) *Client {
 		HTTP:    h,
 		Account: &accountAPI{http: h, authID: creds.AuthID},
 		Numbers: &numbersAPI{http: h, authID: creds.AuthID},
+		Calls:   &callsAPI{http: h, authID: creds.AuthID},
 	}
 }
