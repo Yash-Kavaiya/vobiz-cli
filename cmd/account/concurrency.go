@@ -37,5 +37,5 @@ func runConcurrency(api client.AccountAPI, w io.Writer, format string) error {
 		{Header: "LIMIT", Field: "Limit"},
 		{Header: "CURRENT", Field: "Current"},
 	}
-	return output.Render(w, []client.Concurrency{*c}, cols, f)
+	return output.Render(w, *c, cols, f)
 }

@@ -77,6 +77,21 @@ func writeTable(w io.Writer, rows any, cols []Column) error {
 		v = slice
 	}
 
+	// Validate every column field exists on the element type up-front so a typo
+	// in a column spec fails loudly instead of producing silent empty cells.
+	if v.Len() > 0 {
+		elemType := v.Index(0).Type()
+		if elemType.Kind() == reflect.Ptr {
+			elemType = elemType.Elem()
+		}
+		for _, c := range cols {
+			if _, ok := elemType.FieldByName(c.Field); !ok {
+				return fmt.Errorf("output: column %q references unknown struct field %q on %s",
+					c.Header, c.Field, elemType.Name())
+			}
+		}
+	}
+
 	t := table.NewWriter()
 	t.SetOutputMirror(w)
 
