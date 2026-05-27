@@ -141,7 +141,15 @@ func (c *Client) resolve(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	u.Path = strings.TrimRight(u.Path, "/") + "/" + strings.TrimLeft(path, "/")
+	// Split path from query so the ? doesn't get URL-escaped into the path.
+	pathOnly, query := path, ""
+	if i := strings.IndexByte(path, '?'); i >= 0 {
+		pathOnly, query = path[:i], path[i+1:]
+	}
+	u.Path = strings.TrimRight(u.Path, "/") + "/" + strings.TrimLeft(pathOnly, "/")
+	if query != "" {
+		u.RawQuery = query
+	}
 	return u.String(), nil
 }
 

@@ -54,11 +54,11 @@ func TestGet_JSONOutput(t *testing.T) {
 	if err := runGet(f, &out, "json"); err != nil {
 		t.Fatal(err)
 	}
-	var got []client.Account
+	var got client.Account
 	if err := json.Unmarshal(out.Bytes(), &got); err != nil {
 		t.Fatalf("not valid json: %v\n%s", err, out.String())
 	}
-	if len(got) != 1 || got[0].AuthID != "AB12" || got[0].CashCredits != "1.50" {
+	if got.AuthID != "AB12" || got.CashCredits != "1.50" {
 		t.Fatalf("decoded = %+v", got)
 	}
 }

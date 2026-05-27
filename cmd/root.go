@@ -41,6 +41,8 @@ func New() *cobra.Command {
 	registerCompletion(root)
 	registerAuth(root)
 	registerAccount(root)
+	registerNumbers(root)
+	registerCalls(root)
 	registerDocs(root)
 
 	root.SetOut(os.Stdout)

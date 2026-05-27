@@ -40,5 +40,5 @@ func runGet(api client.AccountAPI, w io.Writer, format string) error {
 		{Header: "CREDITS", Field: "CashCredits"},
 		{Header: "TZ", Field: "Timezone"},
 	}
-	return output.Render(w, []client.Account{*acc}, cols, f)
+	return output.Render(w, *acc, cols, f)
 }

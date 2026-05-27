@@ -57,6 +57,48 @@ func TestRenderYAML(t *testing.T) {
 	}
 }
 
+func TestRender_SingleStructEmitsObjectNotArray_JSON(t *testing.T) {
+	row := trunk{ID: "t1", Name: "Outbound-A", CPS: 10}
+	var buf bytes.Buffer
+	if err := Render(&buf, row, cols, FormatJSON); err != nil {
+		t.Fatal(err)
+	}
+	out := buf.String()
+	if strings.HasPrefix(strings.TrimSpace(out), "[") {
+		t.Fatalf("single struct should not be wrapped in an array, got:\n%s", out)
+	}
+	if !strings.Contains(out, `"ID": "t1"`) {
+		t.Fatalf("json output unexpected:\n%s", out)
+	}
+}
+
+func TestRender_SingleStructEmitsObjectNotArray_YAML(t *testing.T) {
+	row := trunk{ID: "t1", Name: "Outbound-A", CPS: 10}
+	var buf bytes.Buffer
+	if err := Render(&buf, row, cols, FormatYAML); err != nil {
+		t.Fatal(err)
+	}
+	out := buf.String()
+	if strings.HasPrefix(strings.TrimSpace(out), "-") {
+		t.Fatalf("single struct should not produce a YAML list item, got:\n%s", out)
+	}
+	if !strings.Contains(out, "id: t1") {
+		t.Fatalf("yaml output unexpected:\n%s", out)
+	}
+}
+
+func TestRender_TypoInColumnFieldReturnsError(t *testing.T) {
+	bogus := []Column{{Header: "OOPS", Field: "TypoField"}}
+	var buf bytes.Buffer
+	err := Render(&buf, rows, bogus, FormatTable)
+	if err == nil {
+		t.Fatal("expected error for unknown struct field 'TypoField'")
+	}
+	if !strings.Contains(err.Error(), "TypoField") {
+		t.Fatalf("error should mention the bad field name: %v", err)
+	}
+}
+
 func TestParseFormat(t *testing.T) {
 	for _, s := range []string{"table", "TABLE", "Table"} {
 		f, err := ParseFormat(s)
