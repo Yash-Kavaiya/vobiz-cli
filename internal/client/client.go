@@ -8,10 +8,11 @@ import (
 )
 
 type Client struct {
-	HTTP    *httpx.Client
-	Account AccountAPI
-	Numbers NumbersAPI
-	Calls   CallsAPI
+	HTTP       *httpx.Client
+	Account    AccountAPI
+	Numbers    NumbersAPI
+	Calls      CallsAPI
+	Recordings RecordingsAPI
 }
 
 func New(creds auth.Credentials) *Client {
@@ -22,9 +23,10 @@ func New(creds auth.Credentials) *Client {
 		UserAgent: "vobiz-cli/" + version.Version,
 	})
 	return &Client{
-		HTTP:    h,
-		Account: &accountAPI{http: h, authID: creds.AuthID},
-		Numbers: &numbersAPI{http: h, authID: creds.AuthID},
-		Calls:   &callsAPI{http: h, authID: creds.AuthID},
+		HTTP:       h,
+		Account:    &accountAPI{http: h, authID: creds.AuthID},
+		Numbers:    &numbersAPI{http: h, authID: creds.AuthID},
+		Calls:      &callsAPI{http: h, authID: creds.AuthID},
+		Recordings: &recordingsAPI{http: h, authID: creds.AuthID},
 	}
 }
