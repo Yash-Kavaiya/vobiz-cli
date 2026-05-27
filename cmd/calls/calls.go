@@ -21,7 +21,7 @@ var CallsFactory = func() (client.CallsAPI, error) {
 func Register(parent *cobra.Command, format func() string, ov func() runtime.Overrides) {
 	cmd := &cobra.Command{
 		Use:   "calls",
-		Short: "Make outbound calls and inspect call records",
+		Short: "Make outbound calls, inspect call records, and manage recordings",
 	}
 	cmd.PersistentPreRunE = func(*cobra.Command, []string) error {
 		Overrides = ov()
@@ -30,5 +30,6 @@ func Register(parent *cobra.Command, format func() string, ov func() runtime.Ove
 	cmd.AddCommand(newMakeCmd())
 	cmd.AddCommand(newListCmd(format))
 	cmd.AddCommand(newGetCmd(format))
+	cmd.AddCommand(newRecordingsCmd(format))
 	parent.AddCommand(cmd)
 }

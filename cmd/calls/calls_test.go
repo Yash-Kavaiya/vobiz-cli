@@ -3,6 +3,9 @@ package calls
 import (
 	"bytes"
 	"context"
+	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -67,5 +70,54 @@ func TestGet_Prints(t *testing.T) {
 	}
 	if !strings.Contains(out.String(), "c1") {
 		t.Fatalf("missing uuid:\n%s", out.String())
+	}
+}
+
+type fakeRecordings struct {
+	rows         []client.Recording
+	downloadedID string
+}
+
+func (f *fakeRecordings) List(_ context.Context, _ string) ([]client.Recording, string, error) {
+	return f.rows, "", nil
+}
+func (f *fakeRecordings) Get(_ context.Context, _ string) (*client.Recording, error) {
+	return nil, nil
+}
+func (f *fakeRecordings) Download(_ context.Context, id string, dst io.Writer) error {
+	f.downloadedID = id
+	_, err := dst.Write([]byte("FAKE_MP3"))
+	return err
+}
+
+func TestRecordings_List_Renders(t *testing.T) {
+	f := &fakeRecordings{rows: []client.Recording{
+		{RecordingID: "r1", CallUUID: "c1", Duration: 12, RecordingFormat: "mp3"},
+	}}
+	var out bytes.Buffer
+	if err := runRecordingsList(f, &out, "table", 50, false); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), "r1") {
+		t.Fatalf("missing recording id:\n%s", out.String())
+	}
+}
+
+func TestRecordings_Download_WritesFile(t *testing.T) {
+	f := &fakeRecordings{}
+	dir := t.TempDir()
+	dst := filepath.Join(dir, "r1.mp3")
+	if err := runRecordingsDownload(f, "r1", dst); err != nil {
+		t.Fatal(err)
+	}
+	b, err := os.ReadFile(dst)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(b) != "FAKE_MP3" {
+		t.Fatalf("body: %q", b)
+	}
+	if f.downloadedID != "r1" {
+		t.Fatalf("downloaded id = %q", f.downloadedID)
 	}
 }
