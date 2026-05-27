@@ -10,6 +10,7 @@ import (
 type Client struct {
 	HTTP    *httpx.Client
 	Account AccountAPI
+	Numbers NumbersAPI
 }
 
 func New(creds auth.Credentials) *Client {
@@ -22,5 +23,6 @@ func New(creds auth.Credentials) *Client {
 	return &Client{
 		HTTP:    h,
 		Account: &accountAPI{http: h, authID: creds.AuthID},
+		Numbers: &numbersAPI{http: h, authID: creds.AuthID},
 	}
 }
